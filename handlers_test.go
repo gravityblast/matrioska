@@ -10,8 +10,6 @@ import (
 	"testing"
 )
 
-var p = fmt.Printf
-
 func TestMainHandler_Favicon(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	request, _ := http.NewRequest("GET", "/favicon.ico", nil)
