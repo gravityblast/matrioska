@@ -34,6 +34,14 @@ func (e ErrorBadGeometry) Error() string {
 	return fmt.Sprintf("bad geometry %s", e.geometryString)
 }
 
+type ErrorGeometryNotAllowed struct {
+	geometryString string
+}
+
+func (e ErrorGeometryNotAllowed) Error() string {
+	return fmt.Sprintf("geometry not allowed %s", e.geometryString)
+}
+
 func ParseGeometry(s string) (Geometry, error) {
 	geometry := Geometry{}
 	matches := regexpGeometry.FindAllStringSubmatch(s, -1)

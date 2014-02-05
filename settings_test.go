@@ -32,3 +32,17 @@ func TestPort(t *testing.T) {
 	InitSettings()
 	assert.Equal(t, "12345", Port())
 }
+
+func TestIsValidGeometry(t *testing.T) {
+	validGeometries = map[string]bool{}
+	assert.False(t, IsValidGeometry("200x200"))
+
+	validGeometries = map[string]bool{ "*": true }
+	assert.True(t, IsValidGeometry("200x200"))
+
+	validGeometries = map[string]bool{ "200x100": true, "200x": true, "x100": true }
+	assert.False(t, IsValidGeometry("200x200"))
+	assert.True(t, IsValidGeometry("200x100"))
+	assert.True(t, IsValidGeometry("200x"))
+	assert.True(t, IsValidGeometry("x100"))
+}

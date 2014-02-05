@@ -63,6 +63,8 @@ func TestMainHandler_GenerateThumb(t *testing.T) {
 }
 
 func TestMainHandler_BadGeometry(t *testing.T) {
+	InitSettings()
+	settings["PublicPath"] = "./test_fixtures"
 	recorder := httptest.NewRecorder()
 	request, _ := http.NewRequest("GET", "test-axb.png", nil)
 	MainHandler(recorder, request)
@@ -70,8 +72,24 @@ func TestMainHandler_BadGeometry(t *testing.T) {
 }
 
 func TestMainHandler_MainFileNotFound(t *testing.T) {
+	InitSettings()
+	settings["PublicPath"] = "./test_fixtures"
 	recorder := httptest.NewRecorder()
 	request, _ := http.NewRequest("GET", "foo-100x100.png", nil)
 	MainHandler(recorder, request)
 	assert.Equal(t, http.StatusNotFound, recorder.Code)
+}
+
+func TestMainHandler_InvalidGeomtries(t *testing.T) {
+	InitSettings()
+	settings["PublicPath"] = "./test_fixtures"
+	validGeometries = map[string]bool{ "200x200": true}
+
+	// only 200x200 is allowed
+	recorder := httptest.NewRecorder()
+	request, _ := http.NewRequest("GET", "test-10x10.png", nil)
+	MainHandler(recorder, request)
+	assert.Equal(t, http.StatusBadRequest, recorder.Code)
+
+	validGeometries = map[string]bool{ "*": true}
 }

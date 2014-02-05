@@ -28,6 +28,9 @@ func (thumb Thumb) FullPath() string {
 }
 
 func (thumb Thumb) Generate() error {
+	if g := thumb.Geometry.String(); !IsValidGeometry(g) {
+		return ErrorGeometryNotAllowed{ g }
+	}
 	sourcePath := thumb.MainFullPath()
 	outputPath := thumb.FullPath()
 
