@@ -38,27 +38,7 @@ func MainFileNotFound(path string, w http.ResponseWriter, r *http.Request) bool 
 	return false
 }
 
-func MainHandler(w http.ResponseWriter, r *http.Request) {
-	if SkipFavicon(w, r) {
-		return
-	}
-
-	if FileExist(w, r) {
-		return
-	}
-
-	thumb, err := ThumbFromPath(r.URL.Path)
-
-	if err != nil {
-		log("Error: %s", err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if MainFileNotFound(thumb.MainFullPath(), w, r) {
-		return
-	}
-
+func Generate(thumb *Thumb, w http.ResponseWriter) {
 	image, err := thumb.Generate()
 
 	if image != nil {
@@ -86,4 +66,28 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.Write(blob)
+}
+
+func MainHandler(w http.ResponseWriter, r *http.Request) {
+	if SkipFavicon(w, r) {
+		return
+	}
+
+	if FileExist(w, r) {
+		return
+	}
+
+	thumb, err := ThumbFromPath(r.URL.Path)
+
+	if err != nil {
+		log("Error: %s", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if MainFileNotFound(thumb.MainFullPath(), w, r) {
+		return
+	}
+
+	Generate(thumb, w)
 }

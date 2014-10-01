@@ -59,8 +59,8 @@ func ParseThumbName(filePath string) (name string, geometry Geometry, err error)
 	return
 }
 
-func ThumbFromPath(filePath string) (Thumb, error) {
-	thumb := Thumb{
+func ThumbFromPath(filePath string) (*Thumb, error) {
+	thumb := &Thumb{
 		Path: filePath,
 	}
 
