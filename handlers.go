@@ -38,23 +38,6 @@ func MainFileNotFound(path string, w http.ResponseWriter, r *http.Request) bool 
 	return false
 }
 
-func ThumbGenerationFailed(thumb Thumb, w http.ResponseWriter, r *http.Request) bool {
-	if err := thumb.Generate(); err != nil {
-		log("Error: %s", err.Error())
-
-		switch err.(type) {
-		default:
-			http.Error(w, "internal server error", http.StatusInternalServerError)
-		case ErrorGeometryNotAllowed:
-			http.Error(w, "geometry not allowed", http.StatusBadRequest)
-		}
-
-		return true
-	}
-
-	return false
-}
-
 func MainHandler(w http.ResponseWriter, r *http.Request) {
 	if SkipFavicon(w, r) {
 		return
@@ -76,9 +59,31 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if ThumbGenerationFailed(thumb, w, r) {
+	image, err := thumb.Generate()
+
+	if image != nil {
+		defer image.Destroy()
+	}
+
+	if err != nil {
+		log("Error: %s", err.Error())
+
+		switch err.(type) {
+		default:
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		case ErrorGeometryNotAllowed:
+			http.Error(w, "geometry not allowed", http.StatusBadRequest)
+		}
+
 		return
 	}
 
-	http.ServeFile(w, r, PublicPath()+thumb.Path)
+	blob, err := image.ToBlob("jpg")
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Write(blob)
 }

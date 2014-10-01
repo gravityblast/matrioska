@@ -3,9 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
-	"os/exec"
 	"path"
 	"regexp"
+
+	"github.com/quirkey/magick"
 )
 
 type Thumb struct {
@@ -27,17 +28,21 @@ func (thumb Thumb) FullPath() string {
 	return path.Join(PublicPath(), thumb.Path)
 }
 
-func (thumb Thumb) Generate() error {
+func (thumb Thumb) Generate() (*magick.MagickImage, error) {
 	if g := thumb.Geometry.String(); !IsValidGeometry(g) {
-		return ErrorGeometryNotAllowed{ g }
+		return nil, ErrorGeometryNotAllowed{g}
 	}
 	sourcePath := thumb.MainFullPath()
-	outputPath := thumb.FullPath()
+	log("Generating from %s", sourcePath)
 
-	log("Generating: %s", outputPath)
-	cmd := exec.Command("convert", sourcePath, "-geometry", thumb.Geometry.String(), outputPath)
+	image, err := magick.NewFromFile(sourcePath)
+	if err != nil {
+		return image, err
+	}
 
-	return cmd.Run()
+	err = image.Resize(thumb.Geometry.String())
+
+	return image, err
 }
 
 func ParseThumbName(filePath string) (name string, geometry Geometry, err error) {

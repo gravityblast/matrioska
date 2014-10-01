@@ -60,11 +60,7 @@ func TestMainHandler_GenerateThumb(t *testing.T) {
 
 	// check if the thumb has been generated
 	assert.Equal(t, http.StatusOK, recorder.Code)
-	_, err = os.Stat(filePath)
-	assert.Nil(t, err)
-
-	// remove the generated thumb
-	os.Remove(filePath)
+	assert.Equal(t, "image/jpeg", recorder.HeaderMap.Get("Content-Type"))
 }
 
 func TestMainHandler_BadGeometry(t *testing.T) {
