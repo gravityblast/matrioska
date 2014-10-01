@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
-	assert "github.com/pilu/miniassert"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path"
 	"testing"
+
+	assert "github.com/pilu/miniassert"
 )
+
+func init() {
+	logger.enabled = false
+}
 
 func TestMainHandler_Favicon(t *testing.T) {
 	recorder := httptest.NewRecorder()
@@ -83,7 +88,7 @@ func TestMainHandler_MainFileNotFound(t *testing.T) {
 func TestMainHandler_InvalidGeomtries(t *testing.T) {
 	InitSettings()
 	settings["PublicPath"] = "./test_fixtures"
-	validGeometries = map[string]bool{ "200x200": true}
+	validGeometries = map[string]bool{"200x200": true}
 
 	// only 200x200 is allowed
 	recorder := httptest.NewRecorder()
@@ -91,5 +96,5 @@ func TestMainHandler_InvalidGeomtries(t *testing.T) {
 	MainHandler(recorder, request)
 	assert.Equal(t, http.StatusBadRequest, recorder.Code)
 
-	validGeometries = map[string]bool{ "*": true}
+	validGeometries = map[string]bool{"*": true}
 }
