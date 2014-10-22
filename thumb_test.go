@@ -1,8 +1,9 @@
 package main
 
 import (
-	assert "github.com/pilu/miniassert"
 	"testing"
+
+	assert "github.com/pilu/miniassert"
 )
 
 func TestThumbFromPath(t *testing.T) {
@@ -23,6 +24,14 @@ func TestParseThumbName(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, "foo", name)
+	assert.Equal(t, 20, geometry.Width)
+	assert.Equal(t, 40, geometry.Height)
+
+	path = "foo-xyz-20x40.png"
+	name, geometry, err = ParseThumbName(path)
+
+	assert.Nil(t, err)
+	assert.Equal(t, "foo-xyz", name)
 	assert.Equal(t, 20, geometry.Width)
 	assert.Equal(t, 40, geometry.Height)
 
