@@ -12,7 +12,6 @@ const DefaultPort = "7000"
 var settings map[string]string
 var validGeometries map[string]bool
 
-
 type IsValidGeometryFunc func(geometry string) bool
 
 func getVar(name, defaultValue string) string {
